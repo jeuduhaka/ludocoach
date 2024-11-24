@@ -124,6 +124,7 @@
         color: white;
         font-size: 2em; /* Adjust as needed */
         text-align: center;
+        line-height: 1em;
       }
 
       video {
@@ -156,12 +157,12 @@
       const translations = [];
     </script>
     <script src="./i18n/fr.js"></script>
+    <script src="./i18n/en.js"></script>
+    <script src="./i18n/zh.js"></script>
     <script src="./assets/js/cards.js"></script>
     <script src="./assets/js/videos.js"></script>
     <script>
       $(document).ready(function () {
-        const language = "fr";
-
         function renderHomeScreen() {
           return `
             <h1 class="font-charcuterie-sans-inline text-blue">${translations[language].hakaGame}</h1>
@@ -238,6 +239,11 @@
           }
 
           $("#main").html(mapHashToScreenFunction[hash]());
+        }
+
+        const language = window.navigator.language.split("-")[0];
+        if (!translations[language]) {
+          language = "en";
         }
 
         // Handle initial load
