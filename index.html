@@ -80,12 +80,12 @@
         font-size: 3em;
         margin: 0;
       }
-      .home-description {
+      .font-1\.5em {
         font-size: 1.5em;
-        margin: 0;
       }
-      .description {
-        font-size: 1.5em;
+
+      .home-description {
+        margin: 0;
       }
 
       .button-blue {
@@ -165,11 +165,21 @@
         function renderHomeScreen() {
           return `
             <h1 class="font-charcuterie-sans-inline text-blue">${translations[language].hakaGame}</h1>
-            <p class="font-charcuterie-sans-inline text-blue home-description">${translations[language].guidedByLudocoach}</p>
+            <p class="font-charcuterie-sans-inline text-blue home-description font-1.5em">${translations[language].guidedByLudocoach}</p>
             <img src="./assets/images/logo-200x200.png" class="img-fluid">
-            <p class="font-charcuterie-sans-inline text-blue home-description">${translations[language].powerIsInYou}</p>
-            <a href="#play-3-moves" class="button-blue">${translations[language].play3Moves}</a>
+            <p class="font-charcuterie-sans-inline text-blue home-description font-1.5em">${translations[language].powerIsInYou}</p>
+            <a href="#screen-3-moves-1" class="button-blue">${translations[language].play3Moves}</a>
             <a href="#screen-1-move-1" class="button-blue">${translations[language].play1Move}</a>
+          `;
+        }
+
+        function renderScreen3Moves1() {
+          return `
+            <p class="font-charcuterie-sans-inline text-blue text-center font-1.5em">${translations[language].chooseCards}</p>
+            <p class="font-charcuterie-sans-inline font-1.5em" style="color: #B8282E">1. ${translations[language].having}</p>
+            <p class="font-charcuterie-sans-inline font-1.5em" style="color: #F7941C">2. ${translations[language].doing}</p>
+            <p class="font-charcuterie-sans-inline font-1.5em " style="color: #39B549">3. ${translations[language].being}</p>
+            <a href="#screen-3-moves-2" class="button-blue">${translations[language].next}</a>
           `;
         }
 
@@ -209,6 +219,7 @@
 
         const mapHashToScreenFunction = {
           "#home": renderHomeScreen,
+          "#screen-3-moves-1": renderScreen3Moves1,
           "#screen-1-move-1": renderScreen1Move1,
           "#screen-1-move-2": renderScreen1Move2,
           "#screen-video": renderScreenVideo,
