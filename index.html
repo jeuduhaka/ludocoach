@@ -116,9 +116,29 @@
         border: none;
       }
 
+      .card-overlay-text {
+        width: 90%;
+        position: absolute;
+        bottom: 0; /* Adjust the percentage to move text up or down */
+        left: 50%;
+        transform: translateX(-50%);
+        /*background-color: rgba(0, 0, 0, 0.6); /* Optional: Semi-transparent background */
+        color: white;
+        /* padding: 0 10px; */
+        /*border-radius: 5px; /* Optional: Rounded corners */
+        font-size: 2em; /* Adjust as needed */
+        text-align: center;
+      }
+
       video {
         cursor: pointer;
         max-height: 100vh;
+      }
+
+      @media screen and (max-width: 600px) {
+        .card-overlay-text {
+          font-size: 1.5em;
+        }
       }
 
       @media screen and (min-width: 768px) {
@@ -171,9 +191,10 @@
                 ${Object.entries(cards.front.green)
                   .map(
                     ([key, cardPath]) => `
-                  <div class="col-4">
+                  <div class="col-4 position-relative">
                     <a href="#screen-video/green/${key}">
                       <img src="${cardPath}" class="img-fluid card">
+                      <p class="card-overlay-text font-charcuterie-sans-inline">${translations[language][key]}</p>
                     </a>
                   </div>
                 `
