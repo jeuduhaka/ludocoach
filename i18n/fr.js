@@ -25,7 +25,7 @@ translations['fr'] = {
     iChooseThisCard: 'Je choisis cette carte',
     chooseAnotherCard: 'Choisir une autre carte',
     manaActivated:
-      'Bravo, vous avez activé votre Mana ! Dites vous : "Le pouvoir est en moi !"',
+      'Bravo, vous avez activé votre Mana ! Dites-vous : "Le pouvoir est en moi !"',
     thankYou: 'Merci',
   
     //Menus
