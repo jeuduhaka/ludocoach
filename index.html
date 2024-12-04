@@ -195,29 +195,29 @@
       $(document).ready(function () {
         function renderHomeScreen() {
           return `
-            <h1 class="font-charcuterie-sans-inline text-blue">${translations[language].hakaGame}</h1>
-            <p class="font-charcuterie-sans-inline text-blue home-description font-1.5em">${translations[language].guidedByLudocoach}</p>
+            <h1 class="font-charcuterie-sans-inline text-blue">${translations[interfaceLanguage].hakaGame}</h1>
+            <p class="font-charcuterie-sans-inline text-blue home-description font-1.5em">${translations[interfaceLanguage].guidedByLudocoach}</p>
             <img src="./assets/images/logo-200x200.png" class="img-fluid">
-            <p class="font-charcuterie-sans-inline text-blue home-description font-1.5em">${translations[language].powerIsInYou}</p>
-            <a href="#screen-3-moves-1" class="button-blue">${translations[language].play3Moves}</a>
-            <a href="#screen-1-move-1" class="button-blue">${translations[language].play1Move}</a>
+            <p class="font-charcuterie-sans-inline text-blue home-description font-1.5em">${translations[interfaceLanguage].powerIsInYou}</p>
+            <a href="#screen-3-moves-1" class="button-blue">${translations[interfaceLanguage].play3Moves}</a>
+            <a href="#screen-1-move-1" class="button-blue">${translations[interfaceLanguage].play1Move}</a>
             `;
         }
 
         function renderScreen3Moves1() {
           return `
-            <p class="font-charcuterie-sans-inline text-blue text-center font-1.5em">${translations[language].chooseCards}</p>
-            <p class="font-charcuterie-sans-inline font-1.5em" style="color: #B8282E">1. ${translations[language].having}</p>
-            <p class="font-charcuterie-sans-inline font-1.5em" style="color: #F7941C">2. ${translations[language].doing}</p>
-            <p class="font-charcuterie-sans-inline font-1.5em " style="color: #39B549">3. ${translations[language].being}</p>
-            <a href="#screen-3-moves-2" class="button-blue">${translations[language].next}</a>
+            <p class="font-charcuterie-sans-inline text-blue text-center font-1.5em">${translations[interfaceLanguage].chooseCards}</p>
+            <p class="font-charcuterie-sans-inline font-1.5em" style="color: #B8282E">1. ${translations[interfaceLanguage].having}</p>
+            <p class="font-charcuterie-sans-inline font-1.5em" style="color: #F7941C">2. ${translations[interfaceLanguage].doing}</p>
+            <p class="font-charcuterie-sans-inline font-1.5em " style="color: #39B549">3. ${translations[interfaceLanguage].being}</p>
+            <a href="#screen-3-moves-2" class="button-blue">${translations[interfaceLanguage].next}</a>
           `;
         }
 
         function renderScreen1Move1() {
           return `
-            <p class="font-charcuterie-sans-inline text-blue text-center font-1.5em">${translations[language].oneMoveDescription}</p>
-            <a href="#screen-1-move-2" class="button-blue">${translations[language].next}</a>
+            <p class="font-charcuterie-sans-inline text-blue text-center font-1.5em">${translations[interfaceLanguage].oneMoveDescription}</p>
+            <a href="#screen-1-move-2" class="button-blue">${translations[interfaceLanguage].next}</a>
           `;
         }
 
@@ -230,7 +230,7 @@
                   <div class="col-4 position-relative">
                     <a href="#screen-video/green/${key}">
                       <img src="${cardPath}" class="img-fluid card">
-                      <p class="card-overlay-text font-charcuterie-sans-inline">${translations[language][key]}</p>
+                      <p class="card-overlay-text font-charcuterie-sans-inline">${translations[interfaceLanguage][key]}</p>
                     </a>
                   </div>
                 `
@@ -379,7 +379,7 @@
                         width="315"
                         height="560"
                         src="https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&rel=0"
-                        title="${translations[language][videoKey]}"
+                        title="${translations[interfaceLanguage][videoKey]}"
                         frameborder="0"
                         allowfullscreen
                         style="display: none"
