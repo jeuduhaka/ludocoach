@@ -247,6 +247,17 @@
           "#screen-1-move-2": renderScreen1Move2,
         };
 
+        function muteYouTubeVideo(youTubeIframe) {
+          if (!youTubeIframe) {
+            return;
+          }
+
+          youTubeIframe.contentWindow.postMessage(
+            '{"event":"command","func":"mute","args":""}',
+            "*"
+          );
+        }
+
         function pauseYouTubeVideo(youTubeIframe) {
           if (!youTubeIframe) {
             return;
@@ -270,6 +281,7 @@
         }
 
         function showPage(hash) {
+          muteYouTubeVideo($(".current-video")[0]);
           $(".current-video").hide();
           pauseYouTubeVideo($(".current-video")[0]);
           $(".current-video").removeClass("current-video");
