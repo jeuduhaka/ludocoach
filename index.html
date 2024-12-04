@@ -159,7 +159,9 @@
       role="main"
       class="d-flex flex-column justify-content-center align-items-center"
     >
-      <div class="wrapper"></div>
+      <div class="wrapper">
+        <div class="video-loading-status text-center text-blue font-space-mono"></div>
+      </div>
     </main>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
@@ -186,44 +188,9 @@
       }
 
       $("html").attr("lang", interfaceLanguage);
-      $("title").text(translations[interfaceLanguage].hakaGame + " | Ludocoach");
-
-      /**
-       * onYouTubeIframeAPIReady – The API will call this function
-       * when the page has finished downloading the JavaScript for the player API,
-       * which enables you to then use the API on your page.
-       * Thus, this function might create the player objects
-       * that you want to display when the page loads.
-       *
-       * @see https://developers.google.com/youtube/iframe_api_reference#Requirements
-       */
-      function onYouTubeIframeAPIReady() {
-        function onPlayerStateChange(event) {
-          if (event.data == YT.PlayerState.ENDED) {
-            // Go to next slide when YouTube video has ended
-            alert("Go to next slide");
-          }
-        }
-
-        function createYouTubePlayersEventListeners() {
-          const selector = "iframe[src*='www.youtube-nocookie.com/embed/']";
-          const iframeYouTubePlayers = document.querySelectorAll(selector);
-
-          iframeYouTubePlayers.forEach(function (iframeYouTubePlayer) {
-            iframeYouTubePlayer.onload = function () {
-              new YT.Player(iframeYouTubePlayer, {
-                events: {
-                  onStateChange: onPlayerStateChange,
-                },
-              });
-
-              numberOfVideosLoaded++;
-            };
-          });
-        }
-
-        createYouTubePlayersEventListeners();
-      }
+      $("title").text(
+        translations[interfaceLanguage].hakaGame + " | Ludocoach"
+      );
 
       $(document).ready(function () {
         function renderHomeScreen() {
@@ -302,19 +269,6 @@
           );
         }
 
-        function waitForVideosLoaded(targetValue) {
-          return new Promise((resolve) => {
-            const checkInterval = setInterval(() => {
-              $(".wrapper").html(`<p>${numberOfVideosLoaded}/${targetValue}</p>`);
-
-              if (numberOfVideosLoaded === targetValue) {
-                clearInterval(checkInterval);
-                resolve(); // Resolve the promise when the condition is met
-              }
-            }, 1000); // Check every 1000ms
-          });
-        }
-
         function showPage(hash) {
           $(".current-video").hide();
           pauseYouTubeVideo($(".current-video")[0]);
@@ -349,6 +303,63 @@
           });
         }
 
+        /**
+         * onYouTubeIframeAPIReady – The API will call this function
+         * when the page has finished downloading the JavaScript for the player API,
+         * which enables you to then use the API on your page.
+         * Thus, this function might create the player objects
+         * that you want to display when the page loads.
+         *
+         * @see https://developers.google.com/youtube/iframe_api_reference#Requirements
+         */
+        function onYouTubeIframeAPIReady() {
+          function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.ENDED) {
+              // Go to next slide when YouTube video has ended
+              alert("Go to next slide");
+            }
+          }
+
+          function createYouTubePlayersEventListeners() {
+            const selector = "iframe[src*='www.youtube-nocookie.com/embed/']";
+            const iframeYouTubePlayers = document.querySelectorAll(selector);
+
+            const totalVideos = iframeYouTubePlayers.length;
+            const $statusContainer = $(".video-loading-status");
+
+            // Initialize the display
+            $statusContainer.text(`${translations[interfaceLanguage].loading}: 0/${totalVideos}`);
+
+            iframeYouTubePlayers.forEach(function (iframeYouTubePlayer) {
+              iframeYouTubePlayer.onload = function () {
+                new YT.Player(iframeYouTubePlayer, {
+                  events: {
+                    onStateChange: onPlayerStateChange,
+                  },
+                });
+
+                numberOfVideosLoaded++;
+                // Update the status dynamically
+                $statusContainer.text(
+                  `${translations[interfaceLanguage].loading}: ${numberOfVideosLoaded}/${totalVideos}`
+                );
+
+                // Optionally hide the status when all videos are loaded
+                if (numberOfVideosLoaded === totalVideos) {
+                  setTimeout(() => {
+                    $statusContainer.hide();
+                    main();
+                  }, 1000); // Delay for user clarity
+                }
+              };
+            });
+          }
+
+          createYouTubePlayersEventListeners();
+        }
+
+        window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+
         // Add YouTube API
         (function addYouTubeAPI() {
           const tag = document.createElement("script");
@@ -380,12 +391,6 @@
               .join("");
 
             $("main").append(videosIframes);
-
-            onYouTubeIframeAPIReady();
-
-            waitForVideosLoaded(27).then(() => {
-              main();
-            });
           };
         })();
       });
