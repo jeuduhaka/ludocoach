@@ -110,6 +110,14 @@
         max-width: 700px;
       }
 
+      .wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
       .card {
         background: none;
         border: none;
@@ -150,11 +158,13 @@
       id="main"
       role="main"
       class="d-flex flex-column justify-content-center align-items-center"
-    ></main>
-
+    >
+      <div class="wrapper"></div>
+    </main>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
       const translations = [];
+      const videos = [];
     </script>
     <script src="./i18n/fr.js"></script>
     <script src="./i18n/en.js"></script>
@@ -162,6 +172,58 @@
     <script src="./assets/js/cards.js"></script>
     <script src="./assets/js/videos.js"></script>
     <script>
+      let language = window.navigator.language.split("-")[0];
+      let interfaceLanguage;
+      let videoLanguage;
+      let numberOfVideosLoaded = 0;
+
+      if (!translations[language]) {
+        interfaceLanguage = "en";
+      }
+
+      if (!videos[language]) {
+        videoLanguage = "fr";
+      }
+
+      $("html").attr("lang", interfaceLanguage);
+
+      /**
+       * onYouTubeIframeAPIReady – The API will call this function
+       * when the page has finished downloading the JavaScript for the player API,
+       * which enables you to then use the API on your page.
+       * Thus, this function might create the player objects
+       * that you want to display when the page loads.
+       *
+       * @see https://developers.google.com/youtube/iframe_api_reference#Requirements
+       */
+      function onYouTubeIframeAPIReady() {
+        function onPlayerStateChange(event) {
+          if (event.data == YT.PlayerState.ENDED) {
+            // Go to next slide when YouTube video has ended
+            alert("Go to next slide");
+          }
+        }
+
+        function createYouTubePlayersEventListeners() {
+          const selector = "iframe[src*='www.youtube-nocookie.com/embed/']";
+          const iframeYouTubePlayers = document.querySelectorAll(selector);
+
+          iframeYouTubePlayers.forEach(function (iframeYouTubePlayer) {
+            iframeYouTubePlayer.onload = function () {
+              new YT.Player(iframeYouTubePlayer, {
+                events: {
+                  onStateChange: onPlayerStateChange,
+                },
+              });
+
+              numberOfVideosLoaded++;
+            };
+          });
+        }
+
+        createYouTubePlayersEventListeners();
+      }
+
       $(document).ready(function () {
         function renderHomeScreen() {
           return `
@@ -171,7 +233,7 @@
             <p class="font-charcuterie-sans-inline text-blue home-description font-1.5em">${translations[language].powerIsInYou}</p>
             <a href="#screen-3-moves-1" class="button-blue">${translations[language].play3Moves}</a>
             <a href="#screen-1-move-1" class="button-blue">${translations[language].play1Move}</a>
-          `;
+            `;
         }
 
         function renderScreen3Moves1() {
@@ -193,7 +255,6 @@
 
         function renderScreen1Move2() {
           return `
-            <div class="container">
               <div class="row">
                 ${Object.entries(cards.front.green)
                   .map(
@@ -208,13 +269,6 @@
                   )
                   .join("")}
               </div>
-            </div>
-          `;
-        }
-
-        function renderScreenVideo(color, videoKey) {
-          return `
-            <video src="${videos[color][videoKey]}" controls></video>
           `;
         }
 
@@ -223,10 +277,48 @@
           "#screen-3-moves-1": renderScreen3Moves1,
           "#screen-1-move-1": renderScreen1Move1,
           "#screen-1-move-2": renderScreen1Move2,
-          "#screen-video": renderScreenVideo,
         };
 
+        function pauseYouTubeVideo(youTubeIframe) {
+          if (!youTubeIframe) {
+            return;
+          }
+
+          youTubeIframe.contentWindow.postMessage(
+            '{"event":"command","func":"stopVideo","args":""}',
+            "*"
+          );
+        }
+
+        function playYouTubeVideo(youTubeIframe) {
+          if (!youTubeIframe) {
+            return;
+          }
+
+          youTubeIframe.contentWindow.postMessage(
+            '{"event":"command","func":"playVideo","args":""}',
+            "*"
+          );
+        }
+
+        function waitForVideosLoaded(targetValue) {
+          return new Promise((resolve) => {
+            const checkInterval = setInterval(() => {
+              $(".wrapper").html(`<p>${numberOfVideosLoaded}/${targetValue}</p>`);
+
+              if (numberOfVideosLoaded === targetValue) {
+                clearInterval(checkInterval);
+                resolve(); // Resolve the promise when the condition is met
+              }
+            }, 1000); // Check every 1000ms
+          });
+        }
+
         function showPage(hash) {
+          $(".current-video").hide();
+          pauseYouTubeVideo($(".current-video")[0]);
+          $(".current-video").removeClass("current-video");
+
           if (hash.includes("#screen-video")) {
             const hashSplit = hash.split("/");
 
@@ -234,29 +326,67 @@
             const color = hashSplit[1];
             const videoKey = hashSplit[2];
 
-            $("#main").html(mapHashToScreenFunction[hash](color, videoKey));
+            $(".wrapper").hide();
+            $(`#video-${videoKey}`).show().addClass("current-video");
+            playYouTubeVideo($(`#video-${videoKey}`)[0]);
             return;
           }
 
-          $("#main").html(mapHashToScreenFunction[hash]());
+          $(".wrapper").show();
+          $(".wrapper").html(mapHashToScreenFunction[hash]());
         }
 
-        const language = window.navigator.language.split("-")[0];
-        if (!translations[language]) {
-          language = "en";
+        function main() {
+          // Handle initial load
+          const initialHash = window.location.hash || "#home";
+          showPage(initialHash);
+
+          // Handle hash change
+          $(window).on("hashchange", function () {
+            const hash = window.location.hash || "#home";
+            showPage(hash);
+          });
         }
 
-        $('html').attr('lang', window.navigator.language);
+        // Add YouTube API
+        (function addYouTubeAPI() {
+          const tag = document.createElement("script");
+          tag.src = "https://www.youtube.com/player_api";
+          const firstScriptTag = document.getElementsByTagName("script")[0];
+          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        // Handle initial load
-        const initialHash = window.location.hash || "#home";
-        showPage(initialHash);
+          tag.onload = function () {
+            const videosIframes = Object.entries(videos[videoLanguage])
+              .map(([color, mapVideoKeyToYoutubeId]) => {
+                return Object.entries(mapVideoKeyToYoutubeId)
+                  .map(([videoKey, videoId]) => {
+                    return `
+                      <iframe
+                        id="video-${videoKey}"
+                        class="video"
+                        width="315"
+                        height="560"
+                        src="https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&rel=0"
+                        title="${translations[language][videoKey]}"
+                        frameborder="0"
+                        allowfullscreen
+                        style="display: none"
+                      ></iframe>
+                    `;
+                  })
+                  .join("");
+              })
+              .join("");
 
-        // Handle hash change
-        $(window).on("hashchange", function () {
-          const hash = window.location.hash || "#home";
-          showPage(hash);
-        });
+            $("main").append(videosIframes);
+
+            onYouTubeIframeAPIReady();
+
+            waitForVideosLoaded(27).then(() => {
+              main();
+            });
+          };
+        })();
       });
     </script>
   </body>
