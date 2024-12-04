@@ -258,6 +258,17 @@
           );
         }
 
+        function unMuteYouTubeVideo(youTubeIframe) {
+          if (!youTubeIframe) {
+            return;
+          }
+
+          youTubeIframe.contentWindow.postMessage(
+            '{"event":"command","func":"unMute","args":""}',
+            "*"
+          );
+        }
+
         function pauseYouTubeVideo(youTubeIframe) {
           if (!youTubeIframe) {
             return;
@@ -295,6 +306,7 @@
 
             $(".wrapper").hide();
             $(`#video-${videoKey}`).show().addClass("current-video");
+            unMuteYouTubeVideo($(`#video-${videoKey}`)[0]);
             playYouTubeVideo($(`#video-${videoKey}`)[0]);
             return;
           }
