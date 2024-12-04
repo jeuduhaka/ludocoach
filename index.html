@@ -341,7 +341,7 @@
                 numberOfVideosLoaded++;
                 // Update the status dynamically
                 $statusContainer.text(
-                  `${translations[interfaceLanguage].loading}: ${numberOfVideosLoaded}/${totalVideos}`
+                  `${translations[interfaceLanguage].loading}${interfaceLanguage === "fr" ? " " : ""}: ${numberOfVideosLoaded}/${totalVideos}`
                 );
 
                 // Optionally hide the status when all videos are loaded
