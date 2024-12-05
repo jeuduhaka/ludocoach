@@ -140,6 +140,43 @@
         max-height: 100vh;
       }
 
+      .video-container {
+        display: none;
+        position: relative;
+        width: 315px;
+        height: 560px;
+      }
+
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        background-color: rgba(0, 0, 0, 0.5);
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      .overlay-button {
+        margin: 10px;
+        padding: 10px 20px;
+        background-color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .overlay-button:hover {
+        background-color: #f0f0f0;
+      }
+
       @media screen and (max-width: 600px) {
         .card-overlay-text {
           font-size: 1.5em;
@@ -160,7 +197,9 @@
       class="d-flex flex-column justify-content-center align-items-center"
     >
       <div class="wrapper">
-        <div class="video-loading-status text-center text-blue font-space-mono"></div>
+        <div
+          class="video-loading-status text-center text-blue font-space-mono"
+        ></div>
       </div>
     </main>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -292,7 +331,7 @@
 
         function showPage(hash) {
           muteYouTubeVideo($(".current-video")[0]);
-          $(".current-video").hide();
+          $(".current-video").parent().hide();
           pauseYouTubeVideo($(".current-video")[0]);
           $(".current-video").removeClass("current-video");
 
@@ -304,7 +343,9 @@
             const videoKey = hashSplit[2];
 
             $(".wrapper").hide();
-            $(`#video-${videoKey}`).show().addClass("current-video");
+            $(`#video-${videoKey}`).attr("src", $(`#video-${videoKey}`).data("src"));
+            $(`#video-${videoKey}`).parent().show();
+            $(`#video-${videoKey}`).addClass("current-video");
             unMuteYouTubeVideo($(`#video-${videoKey}`)[0]);
             // playYouTubeVideo($(`#video-${videoKey}`)[0]);
             return;
@@ -314,7 +355,7 @@
           $(".wrapper").html(mapHashToScreenFunction[hash]());
         }
 
-        function main() {
+        function handleRoutes() {
           // Handle initial load
           const initialHash = window.location.hash || "#home";
           showPage(initialHash);
@@ -339,20 +380,34 @@
           function onPlayerStateChange(event) {
             if (event.data == YT.PlayerState.ENDED) {
               // Go to next slide when YouTube video has ended
-              alert("Go to next slide");
+              $(".current-video")
+                .parent()
+                .find(".overlay")
+                .css("visibility", "visible");
+              $(".current-video").parent().find(".overlay").css("opacity", "1");
             }
           }
 
           function createYouTubePlayersEventListeners() {
-            const selector = "iframe[src*='www.youtube-nocookie.com/embed/']";
+            const selector = "iframe[data-src*='www.youtube-nocookie.com/embed/']";
             const iframeYouTubePlayers = document.querySelectorAll(selector);
 
             iframeYouTubePlayers.forEach(function (iframeYouTubePlayer) {
               iframeYouTubePlayer.onload = function () {
-                new YT.Player(iframeYouTubePlayer, {
+                const player = new YT.Player(iframeYouTubePlayer, {
                   events: {
                     onStateChange: onPlayerStateChange,
                   },
+                });
+
+                $(iframeYouTubePlayer)
+                .parent()
+                .find(".replay-button")
+                .click(() => {
+                  player.seekTo(0);
+                  player.playVideo();
+                  $(".current-video").parent().find(".overlay").css("visibility", "hidden");
+                  $(".current-video").parent().find(".overlay").css("opacity", "0");
                 });
               };
             });
@@ -376,17 +431,21 @@
                 return Object.entries(mapVideoKeyToYoutubeId)
                   .map(([videoKey, videoId]) => {
                     return `
-                      <iframe
-                        id="video-${videoKey}"
-                        class="video"
-                        width="315"
-                        height="560"
-                        src="https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&rel=0"
-                        title="${translations[interfaceLanguage][videoKey]}"
-                        frameborder="0"
-                        allowfullscreen
-                        style="display: none"
-                      ></iframe>
+                      <div class="video-container">
+                        <iframe
+                          id="video-${videoKey}"
+                          class="video"
+                          width="315"
+                          height="560"
+                          data-src="https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&rel=0"
+                          title="${translations[interfaceLanguage][videoKey]}"
+                          frameborder="0"
+                        ></iframe>
+                        <div class="overlay">
+                          <button class="replay-button overlay-button">Replay</button>
+                          <a href="#home" class="next-button overlay-button">Next</a>
+                        </div>
+                      </div>
                     `;
                   })
                   .join("");
@@ -394,10 +453,10 @@
               .join("");
 
             $("main").append(videosIframes);
+
+            handleRoutes();
           };
         })();
-
-        main();
       });
     </script>
   </body>
