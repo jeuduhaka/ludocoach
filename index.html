@@ -177,7 +177,6 @@
       let language = window.navigator.language.split("-")[0];
       let interfaceLanguage = language;
       let videoLanguage = language;
-      let numberOfVideosLoaded = 0;
 
       if (!translations[language]) {
         interfaceLanguage = "en";
@@ -307,7 +306,7 @@
             $(".wrapper").hide();
             $(`#video-${videoKey}`).show().addClass("current-video");
             unMuteYouTubeVideo($(`#video-${videoKey}`)[0]);
-            playYouTubeVideo($(`#video-${videoKey}`)[0]);
+            // playYouTubeVideo($(`#video-${videoKey}`)[0]);
             return;
           }
 
@@ -348,12 +347,6 @@
             const selector = "iframe[src*='www.youtube-nocookie.com/embed/']";
             const iframeYouTubePlayers = document.querySelectorAll(selector);
 
-            const totalVideos = iframeYouTubePlayers.length;
-            const $statusContainer = $(".video-loading-status");
-
-            // Initialize the display
-            // $statusContainer.text(`${translations[interfaceLanguage].loading}: 0/${totalVideos}`);
-
             iframeYouTubePlayers.forEach(function (iframeYouTubePlayer) {
               iframeYouTubePlayer.onload = function () {
                 new YT.Player(iframeYouTubePlayer, {
@@ -361,20 +354,6 @@
                     onStateChange: onPlayerStateChange,
                   },
                 });
-
-                // numberOfVideosLoaded++;
-                // // Update the status dynamically
-                // $statusContainer.text(
-                //   `${translations[interfaceLanguage].loading}${interfaceLanguage === "fr" ? " " : ""}: ${numberOfVideosLoaded}/${totalVideos}`
-                // );
-
-                // // Optionally hide the status when all videos are loaded
-                // if (numberOfVideosLoaded === totalVideos) {
-                //   setTimeout(() => {
-                //     $statusContainer.hide();
-                //     main();
-                //   }, 1000); // Delay for user clarity
-                // }
               };
             });
           }
