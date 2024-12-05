@@ -352,7 +352,7 @@
             const $statusContainer = $(".video-loading-status");
 
             // Initialize the display
-            $statusContainer.text(`${translations[interfaceLanguage].loading}: 0/${totalVideos}`);
+            // $statusContainer.text(`${translations[interfaceLanguage].loading}: 0/${totalVideos}`);
 
             iframeYouTubePlayers.forEach(function (iframeYouTubePlayer) {
               iframeYouTubePlayer.onload = function () {
@@ -362,19 +362,19 @@
                   },
                 });
 
-                numberOfVideosLoaded++;
-                // Update the status dynamically
-                $statusContainer.text(
-                  `${translations[interfaceLanguage].loading}${interfaceLanguage === "fr" ? " " : ""}: ${numberOfVideosLoaded}/${totalVideos}`
-                );
+                // numberOfVideosLoaded++;
+                // // Update the status dynamically
+                // $statusContainer.text(
+                //   `${translations[interfaceLanguage].loading}${interfaceLanguage === "fr" ? " " : ""}: ${numberOfVideosLoaded}/${totalVideos}`
+                // );
 
-                // Optionally hide the status when all videos are loaded
-                if (numberOfVideosLoaded === totalVideos) {
-                  setTimeout(() => {
-                    $statusContainer.hide();
-                    main();
-                  }, 1000); // Delay for user clarity
-                }
+                // // Optionally hide the status when all videos are loaded
+                // if (numberOfVideosLoaded === totalVideos) {
+                //   setTimeout(() => {
+                //     $statusContainer.hide();
+                //     main();
+                //   }, 1000); // Delay for user clarity
+                // }
               };
             });
           }
@@ -417,6 +417,8 @@
             $("main").append(videosIframes);
           };
         })();
+
+        main();
       });
     </script>
   </body>

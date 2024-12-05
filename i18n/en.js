@@ -13,7 +13,7 @@ translations['en'] = {
   chooseCards:
     'Choose a card of each color according to your emotions and let yourself be guided by tapping each corresponding card in order',
   oneMoveDescription:
-    'For this version, choose the card which will help you directly reach a state of better-Being',
+    'For this version, choose the card that will take you directly to a better-being.',
   having: 'HAVING',
   doing: 'DOING',
   being: 'BEING',
